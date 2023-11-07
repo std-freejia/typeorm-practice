@@ -17,7 +17,13 @@ export class AppController {
   }
   @Get('users')
   getUsers() {
-    return this.userRepo.find();// 전부 반환 
+    return this.userRepo.find({
+      select: { // 가져올 컬럼만 true 
+        id: true,
+        title: true,
+        version: true,
+      }
+    });// 전부 반환 
   }
   @Patch('users/:id')
   async patchUser(
