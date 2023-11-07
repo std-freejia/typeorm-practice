@@ -1,7 +1,7 @@
 import { Controller, Get, NotFoundException, Param, Patch, Post } from '@nestjs/common';
 import { AppService } from './app.service';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserModel } from './entity/user.entity';
+import { Role, UserModel } from './entity/user.entity';
 import { Repository } from 'typeorm';
 
 @Controller()
@@ -13,17 +13,18 @@ export class AppController {
 
   @Post('users')
   postUser() {
-    return this.userRepo.save({ title: 'hi' });
+    return this.userRepo.save({ title: 'hello' });
   }
   @Get('users')
   getUsers() {
-    return this.userRepo.find({
-      select: { // 가져올 컬럼만 true 
-        id: true,
-        title: true,
-        version: true,
-      }
-    });// 전부 반환 
+    return this.userRepo.find({});// 전부 반환 
+    /*  return this.userRepo.find({
+        select: { // 가져올 컬럼만 true 
+          id: true,
+          title: true,
+          version: true,
+        }
+      }); */
   }
   @Patch('users/:id')
   async patchUser(

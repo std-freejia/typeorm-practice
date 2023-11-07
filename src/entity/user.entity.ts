@@ -1,5 +1,8 @@
 import { Column, CreateDateColumn, Entity, Generated, PrimaryGeneratedColumn, UpdateDateColumn, VersionColumn } from "typeorm";
 
+export enum Role {
+  USER = 'user', ADMIN = 'admin',
+}
 @Entity()
 export class UserModel {
 
@@ -18,6 +21,13 @@ export class UserModel {
     unique: false,  // 기본값이 false. 
   })
   title: string; // 제목 
+
+  @Column({
+    type: 'enum',
+    enum: Role,
+    default: Role.USER,
+  })
+  role: Role;
 
   @CreateDateColumn()
   createdAt: Date;
