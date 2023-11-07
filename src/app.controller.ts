@@ -1,12 +1,38 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, NotFoundException, Param, Patch, Post } from '@nestjs/common';
 import { AppService } from './app.service';
+import { InjectRepository } from '@nestjs/typeorm';
+import { UserModel } from './entity/user.entity';
+import { Repository } from 'typeorm';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(
+    @InjectRepository(UserModel)
+    private readonly userRepo: Repository<UserModel>
+  ) { }
 
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  @Post('users')
+  postUser() {
+    return this.userRepo.save({ title: 'hi' });
+  }
+  @Get('users')
+  getUsers() {
+    return this.userRepo.find();// 전부 반환 
+  }
+  @Patch('users/:id')
+  async patchUser(
+    @Param('id') id: string
+  ) {
+    const user = await this.userRepo.findOne({ where: { id: parseInt(id) } });
+
+    if (!user) {
+      throw new NotFoundException('입력하신 아이디의 사용자가 없습니다. ')
+    }
+
+    return await this.userRepo.save({
+      ...user,
+      title: user.title + '0',
+    })
+
   }
 }
