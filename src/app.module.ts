@@ -11,7 +11,7 @@ import { ProfileModel } from './entity/profile.entity';
 @Module({
   imports: [
     TypeOrmModule.forFeature([ // forFeature(): entity 추가 
-      UserModel,
+      UserModel, ProfileModel,
     ]),
     TypeOrmModule.forRoot({ // forRoot(): connection 정보 
       type: 'postgres',

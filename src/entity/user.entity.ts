@@ -12,6 +12,7 @@ export class UserModel {
   @PrimaryGeneratedColumn() // ('uuid') 사용하면, uuid 가 자동 생성된다 
   id: number;
 
+  /* 
   @Column({
     type: 'varchar',  // DB 에서 인지하는 칼럼 타입. 자동으로 유추됨. 
     name: 'title', // 컬럼명과, typeorm entity 컬럼 명이 다를 경우에 작성하기. 프로퍼티 명으로 자동 유추됨.
@@ -23,6 +24,9 @@ export class UserModel {
     unique: false,  // 기본값이 false. 
   })
   title: string; // 제목 
+*/
+  @Column({ nullable: true })
+  email: string;
 
   @Column({
     type: 'enum',
