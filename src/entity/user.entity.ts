@@ -1,4 +1,6 @@
-import { Column, CreateDateColumn, Entity, Generated, PrimaryGeneratedColumn, UpdateDateColumn, VersionColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, Generated, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn, VersionColumn } from "typeorm";
+import { ProfileModel } from "./profile.entity";
+import { profile } from "console";
 
 export enum Role {
   USER = 'user', ADMIN = 'admin',
@@ -40,5 +42,8 @@ export class UserModel {
 
   @Column()
   @Generated('uuid') // 데이터를 생성할 때마다 1씩 증가. ('uuid') 가능.
-  additionalId: number;
+  additionalId: string;
+
+  @OneToOne(() => ProfileModel, (profile) => profile.user)
+  profile: ProfileModel;
 }
