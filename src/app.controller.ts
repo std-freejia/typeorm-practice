@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Role, UserModel } from './entity/user.entity';
 import { Repository } from 'typeorm';
 import { ProfileModel } from './entity/profile.entity';
+import { PostModel } from './entity/post.entity';
 
 @Controller()
 export class AppController {
@@ -11,7 +12,9 @@ export class AppController {
     @InjectRepository(UserModel)
     private readonly userRepo: Repository<UserModel>,
     @InjectRepository(ProfileModel)
-    private readonly profileRepo: Repository<ProfileModel>
+    private readonly profileRepo: Repository<ProfileModel>,
+    @InjectRepository(PostModel)
+    private readonly posteRepo: Repository<PostModel>,
   ) { }
 
   @Post('users')
@@ -31,9 +34,32 @@ export class AppController {
 
     // relation 까지 함께 조회 
     return this.userRepo.find({
-      relations: { profile: true }
+      relations: {
+        profile: true,
+        posts: true,
+      }
     })
   }
+
+  @Post('user/post')
+  async createUserAndPosts() {
+    const user = await this.userRepo.save({
+      email: 'postuser@gmail.com',
+    })
+
+    const post = await this.posteRepo.save({
+      title: 'post1',
+      author: user,
+    })
+
+    await this.posteRepo.save({
+      title: 'post2',
+      author: user,
+    })
+
+    return user;
+  }
+
   @Patch('users/:id')
   async patchUser(
     @Param('id') id: string
