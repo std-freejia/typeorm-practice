@@ -8,11 +8,12 @@ import { StudentModel, TeacherModel } from './entity/person.entity';
 import { AirplaneModel, BookModel, CarModel, ComputerModel, SingleBaseModel } from './entity/inheritance.entity';
 import { ProfileModel } from './entity/profile.entity';
 import { PostModel } from './entity/post.entity';
+import { TagModel } from './entity/tag.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([ // forFeature(): entity 추가 
-      UserModel, ProfileModel, PostModel
+      UserModel, ProfileModel, PostModel, TagModel
     ]),
     TypeOrmModule.forRoot({ // forRoot(): connection 정보 
       type: 'postgres',
@@ -25,7 +26,7 @@ import { PostModel } from './entity/post.entity';
         UserModel,
         StudentModel, TeacherModel,
         BookModel, CarModel, SingleBaseModel, ComputerModel, AirplaneModel,
-        ProfileModel, PostModel
+        ProfileModel, PostModel, TagModel
       ],
       synchronize: true,
     })

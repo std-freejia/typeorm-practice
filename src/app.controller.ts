@@ -5,6 +5,7 @@ import { Role, UserModel } from './entity/user.entity';
 import { Repository } from 'typeorm';
 import { ProfileModel } from './entity/profile.entity';
 import { PostModel } from './entity/post.entity';
+import { TagModel } from './entity/tag.entity';
 
 @Controller()
 export class AppController {
@@ -14,7 +15,9 @@ export class AppController {
     @InjectRepository(ProfileModel)
     private readonly profileRepo: Repository<ProfileModel>,
     @InjectRepository(PostModel)
-    private readonly posteRepo: Repository<PostModel>,
+    private readonly postRepo: Repository<PostModel>,
+    @InjectRepository(TagModel)
+    private readonly tagRepo: Repository<TagModel>,
   ) { }
 
   @Post('users')
@@ -47,17 +50,60 @@ export class AppController {
       email: 'postuser@gmail.com',
     })
 
-    const post = await this.posteRepo.save({
+    const post = await this.postRepo.save({
       title: 'post1',
       author: user,
     })
 
-    await this.posteRepo.save({
+    await this.postRepo.save({
       title: 'post2',
       author: user,
     })
 
     return user;
+  }
+
+  @Post('posts/tags')
+  async createPostsTags() { // N:N 관계인 posts 와 tags 레코드를 생성하고, 참조를 추가하자. 
+
+    const post1 = await this.postRepo.save({
+      title: 'tag first',
+    });
+    const post2 = await this.postRepo.save({
+      title: 'tag second',
+    });
+
+    const tag1 = await this.tagRepo.save({
+      name: 'Javascript',
+      posts: [post1, post2],
+    })
+    const tag2 = await this.tagRepo.save({
+      name: 'Typescript',
+      posts: [post1],
+    })
+
+    const post3 = await this.postRepo.save({
+      title: 'NextJS Lecture',
+      tags: [tag1, tag2],
+    });
+  }
+
+  @Get('posts')
+  getPosts() {
+    return this.postRepo.find({
+      relations: {
+        tags: true,
+      }
+    })
+  }
+
+  @Get('tags')
+  getTags() {
+    return this.tagRepo.find({
+      relations: {
+        posts: true,
+      }
+    })
   }
 
   @Patch('users/:id')
