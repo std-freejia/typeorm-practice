@@ -22,7 +22,9 @@ export class AppController {
 
   @Post('users')
   postUser() {
-    return this.userRepo.save({});
+    return this.userRepo.save({
+      email: "zxqw@gmail.com"
+    });
   }
   @Get('users')
   getUsers() {
@@ -37,10 +39,34 @@ export class AppController {
 
     // relation 까지 함께 조회 
     return this.userRepo.find({
-      // relations: {
-      //   profile: true,
-      //   posts: true,
-      // }
+      // 조회할 프로퍼티를 지정 (default: 모든 프로퍼티를 조회. 지정한다면 지정한 것 만 조회.)
+      select: {
+        id: true,
+        version: true,
+        createdAt: true,
+        updatedAt: true,
+        // profile 에서 가져올 컬럼을 명시할 수 있다 
+        profile: { id: true }
+      },
+      // 필터링할 조건을 입력하게 된다 
+      // where: { // where 내부에는 default로  AND 조건으로 묶인다 
+      //   version: 1
+      // },
+      // where: [ // where 내부에서 or 조건 걸기: []배열 안에 {} 조건 object 나열  
+      //   { id: 4 }, { version: 2 }, // where id = 4 or version = 2 ,
+      //   {
+      //     profile: { id: 3 }
+      //   }
+      // ],
+      // 관계를 가져오기 
+      relations: {
+        profile: true,
+      },
+      order: {
+        id: 'DESC',
+      },
+      skip: 0, // 처음 몇 개를 제외할 지 지정한다. (default: 0 제외 안 함)
+      take: 0, // 가져올 레코드 개수 (default: 0 존재하는 레코드 전부 조회)
     })
   }
 
@@ -118,7 +144,7 @@ export class AppController {
 
     return await this.userRepo.save({
       ...user,
-      // title: user.title + '0',
+      email: user.email + '0',
     })
   }
 

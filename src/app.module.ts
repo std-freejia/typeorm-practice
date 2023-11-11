@@ -29,6 +29,7 @@ import { TagModel } from './entity/tag.entity';
         ProfileModel, PostModel, TagModel
       ],
       synchronize: true,
+      logging: true
     })
   ],
   controllers: [AppController],
