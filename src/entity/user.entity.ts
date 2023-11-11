@@ -1,6 +1,5 @@
-import { Column, CreateDateColumn, Entity, Generated, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn, VersionColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, Generated, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn, VersionColumn } from "typeorm";
 import { ProfileModel } from "./profile.entity";
-import { profile } from "console";
 import { PostModel } from "./post.entity";
 
 export enum Role {
@@ -9,8 +8,7 @@ export enum Role {
 @Entity()
 export class UserModel {
 
-  // @PrimaryGeneratedColumn() // int auto increment
-  @PrimaryGeneratedColumn() // ('uuid') 사용하면, uuid 가 자동 생성된다 
+  @PrimaryGeneratedColumn() // int auto increment,  ('uuid') 사용하면, uuid 가 자동 생성된다 
   id: number;
 
   /* 
@@ -49,7 +47,22 @@ export class UserModel {
   @Generated('uuid') // 데이터를 생성할 때마다 1씩 증가. ('uuid') 가능.
   additionalId: string;
 
-  @OneToOne(() => ProfileModel, (profile) => profile.user)
+  @OneToOne(() => ProfileModel, (profile) => profile.user, {
+    //eager: find() 실행 할 떄마다 항상 같이 가져올 relation. 즉, user를 가져올때 profile을 항상 같이 가져온다
+    eager: true,   // (default false)
+    // cascade: 저장할 떄 relation 을 한번에 같이 저장 가능
+    cascade: true, // 
+    // nullable: FK가 nullable 인지. (default true)
+    nullable: true,
+    // relation 대상이 삭제 됬을 때,
+    //  - no action -> 아무것도 안 함 
+    //  - 'CASCADE' -> profile을 참조하는 레코드가 다른 테이블에 있다면, 그 레코드도 같이 삭제.
+    //  - 'SET NULL' -> 참조하는 레코드에서 참조 id를 null 로 변경 
+    //  - 'SET DEFAULT' -> 테이블의 기본 세팅으로 설정. 
+    //  - 'RESTRICT' -> 참조하는 레코드가 존재한다면, 참조당하는 레코드 삭제 불가! 
+    onDelete: 'RESTRICT'
+  })
+  @JoinColumn() // join column 을 (참조 컬럼)가지고 있는 쪽에 joinColumn 애노테이션 붙이기 
   profile: ProfileModel;
 
   @OneToMany(() => PostModel, (post) => post.author)

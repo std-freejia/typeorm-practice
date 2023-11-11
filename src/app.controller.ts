@@ -1,4 +1,4 @@
-import { Controller, Get, NotFoundException, Param, Patch, Post } from '@nestjs/common';
+import { Controller, Delete, Get, NotFoundException, Param, Patch, Post } from '@nestjs/common';
 import { AppService } from './app.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Role, UserModel } from './entity/user.entity';
@@ -37,10 +37,10 @@ export class AppController {
 
     // relation 까지 함께 조회 
     return this.userRepo.find({
-      relations: {
-        profile: true,
-        posts: true,
-      }
+      // relations: {
+      //   profile: true,
+      //   posts: true,
+      // }
     })
   }
 
@@ -122,16 +122,31 @@ export class AppController {
     })
   }
 
+  @Delete('user/profile/:id')
+  async deleteProfile(
+    @Param('id') id: string,
+  ) {
+    await this.profileRepo.delete(Number(id));
+  }
+
   @Post('user/profile')
   async createUserAndProfile() {
+    // user 를 저장할 때, profile 도 생성해서 같이 저장해보자. 
     const user = await this.userRepo.save({
-      email: 'sample@gmail.com'
+      email: 'sample@gmail.com',
+      profile: { // user entity의 cascade: true 옵션 지정 해줘야 함.
+        profileImg: 'abc.jpg',
+      }
     })
 
-    await this.profileRepo.save({
-      profileImg: 'sampleImg',
-      user,
-    })
+    // const user = await this.userRepo.save({
+    //   email: 'sample@gmail.com'
+    // })
+
+    // await this.profileRepo.save({
+    //   profileImg: 'sampleImg',
+    //   user,
+    // })
 
     return user;
   }
