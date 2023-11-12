@@ -20,6 +20,72 @@ export class AppController {
     private readonly tagRepo: Repository<TagModel>,
   ) { }
 
+  @Post('sample')
+  async sample() {
+    // create: 모델에 해당되는 객체 생성 - DB저장은 안 함. 
+    // const user1 = this.userRepo.create({
+    //   email: 'test@codefactory.ai',
+    // })
+    // save: 저장 
+    // const user2 = this.userRepo.save({
+    //   email: 'test2@codefactory.ai',
+    // })
+
+    // preload: id 기반으로 레코드를 조회하고, 해당 레코드의 일부를 업데이트한 객체를 다루고 싶을때.
+    //  DB 저장은 안 함! 
+    // const user3 = await this.userRepo.preload({
+    //   id: 102,
+    //   email: 'test2@codefactory.ai'
+    // })
+
+    // delete: 삭제하기 
+    // await this.userRepo.delete({ id: 101 })
+
+    // increment: 식별 컬럼(id) 를 입력하고, 대상 컬럼을 얼마나 증가시킬지 정의 
+    // await this.userRepo.increment({ // id가 2인 레코드의 count 컬럼값을 2 증가시키자. 
+    //   id: 2
+    // }, 'count', 2);
+
+    // decrement: 식별 컬럼(id) 를 입력하고, 대상 컬럼을 얼마나 감소시킬지 정의 
+    // await this.userRepo.decrement({ // id가 2인 레코드의 count 컬럼값을 2 감소시키자. 
+    //   id: 2
+    // }, 'count', 1);
+
+    // 레코드 개수 카운팅 
+    // const count = await this.userRepo.count({
+    //   where: {
+    //     email: ILike('%0%'),
+    //   }
+    // })
+
+    // sum 
+    // const sum = await this.userRepo.sum('count', // 어떤 프로퍼티를 합칠 지.
+    //   { id: LessThan(4) }  // sum 할 레코드들의 조건 
+    // )
+
+    // average
+    const average = await this.userRepo.average('count',
+      { id: LessThan(4) }  // 평균을 구할 레코드들의 조건 
+    )
+
+    // 최소값 
+    const min = await this.userRepo.minimum('count',
+      { id: LessThan(4) }
+    )
+    // 최대값 
+    const max = await this.userRepo.maximum('count',
+      { id: LessThan(4) }
+    )
+
+    // entity 그리고 조건에 맞는 레코드의 개수. 
+    const usersAndCount = await this.userRepo.findAndCount({
+      where: { id: LessThan(10) },
+      take: 3, // 3개만 조회.
+    })
+
+    return usersAndCount;
+  }
+
   @Post('users')
   async postUser() {
     await this.userRepo.save({
@@ -41,7 +107,8 @@ export class AppController {
         // id: Between(10, 15),       // 이상,이하 사이값 
         // id: In([2, 4, 6]),         // 특정 값 배열을 지정  
         // email: IsNull()            //  email 이 null 인 경우 
-      }
+      },
+      order: { id: 'ASC', }
     })
   }
 
