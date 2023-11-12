@@ -2,7 +2,7 @@ import { Controller, Delete, Get, NotFoundException, Param, Patch, Post } from '
 import { AppService } from './app.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Role, UserModel } from './entity/user.entity';
-import { Repository } from 'typeorm';
+import { Between, Equal, ILike, In, IsNull, LessThan, LessThanOrEqual, Like, MoreThan, MoreThanOrEqual, Not, Repository } from 'typeorm';
 import { ProfileModel } from './entity/profile.entity';
 import { PostModel } from './entity/post.entity';
 import { TagModel } from './entity/tag.entity';
@@ -21,52 +21,27 @@ export class AppController {
   ) { }
 
   @Post('users')
-  postUser() {
-    return this.userRepo.save({
-      email: "zxqw@gmail.com"
-    });
+  async postUser() {
+    await this.userRepo.save({
+      email: `user-sample@google.com`,
+    })
   }
   @Get('users')
   getUsers() {
-    // return this.userRepo.find({});// 전부 반환 
-    /*  return this.userRepo.find({
-        select: { // 가져올 컬럼만 true 
-          id: true,
-          title: true,
-          version: true,
-        }
-      }); */
-
-    // relation 까지 함께 조회 
     return this.userRepo.find({
-      // 조회할 프로퍼티를 지정 (default: 모든 프로퍼티를 조회. 지정한다면 지정한 것 만 조회.)
-      select: {
-        id: true,
-        version: true,
-        createdAt: true,
-        updatedAt: true,
-        // profile 에서 가져올 컬럼을 명시할 수 있다 
-        profile: { id: true }
-      },
-      // 필터링할 조건을 입력하게 된다 
-      // where: { // where 내부에는 default로  AND 조건으로 묶인다 
-      //   version: 1
-      // },
-      // where: [ // where 내부에서 or 조건 걸기: []배열 안에 {} 조건 object 나열  
-      //   { id: 4 }, { version: 2 }, // where id = 4 or version = 2 ,
-      //   {
-      //     profile: { id: 3 }
-      //   }
-      // ],
-      // 관계를 가져오기 
-      relations: {
-        profile: true,
-      },
-      order: {
-        id: 'DESC',
-      },
-      skip: 0, // 처음 몇 개를 제외할 지 지정한다. (default: 0 제외 안 함)
-      take: 0, // 가져올 레코드 개수 (default: 0 존재하는 레코드 전부 조회)
+      where: {
+        // id: Not(1),             // 아닌 경우 
+        // id: LessThan(3),        // 미만 
+        // id: LessThanOrEqual(3)  // 이하 
+        // id: MoreThan(5),        // 초과 
+        // id: MoreThanOrEqual(5), // 이상  
+        // id: Equal(5),           // 동일
+        // email: Like('%google%'),  // 유사 문자열 Like는 대소문자를 구분한다
+        // email: ILike('%GOOGLE%')   // 유사 문자열. ILike 대소문자를 구분 안 함 
+        // id: Between(10, 15),       // 이상,이하 사이값 
+        // id: In([2, 4, 6]),         // 특정 값 배열을 지정  
+        // email: IsNull()            //  email 이 null 인 경우 
+      }
     })
   }
 
